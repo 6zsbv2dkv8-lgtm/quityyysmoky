@@ -5,98 +5,109 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuityyySmoke</title>
     <style>
-        /* --- A PINTURA (CSS) --- */
         body {
-            background-color: #000000; /* Fundo Preto */
-            color: #FFFFFF; /* Texto Branco */
-            font-family: sans-serif;
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            padding: 20px;
             margin: 0;
-            text-align: center;
         }
-
-        h1 {
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .logo-emoji {
-            font-size: 1.5em;
-        }
-
+        h1 { color: #fff; margin-top: 40px; }
         #contador-display {
-            font-size: 5em;
+            font-size: 80px;
             font-weight: bold;
-            color: #FF0000; /* Vermelho para destaque */
+            color: #f00;
             margin: 20px 0;
         }
-
         #botao-registrar {
-            background-color: #FF0000; /* Botão Vermelho */
-            color: #FFFFFF;
+            background-color: #f00;
+            color: #fff;
             border: none;
-            border-radius: 50%; /* Faz o botão ficar redondo */
-            width: 150px;
-            height: 150px;
-            font-size: 4em;
+            border-radius: 50%;
+            width: 180px;
+            height: 180px;
+            font-size: 80px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); /* Um brilho vermelho suave */
-            transition: transform 0.1s;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        #botao-registrar:active {
-            transform: scale(0.95); /* Efeito de clique */
+        #botao-registrar:active { transform: scale(0.9); }
+        .aba-historico {
+            margin-top: 50px;
+            width: 100%;
+            max-width: 300px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
         }
-
-        /* Área do Histórico (Invisível por enquanto) */
-        #historico-container {
-            margin-top: 30px;
-            width: 90%;
-            max-width: 400px;
-            text-align: left;
-            display: none; /* Escondido por enquanto */
+        .item-log {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #222;
+            font-size: 14px;
+        }
+        .resumo-card {
+            background: #111;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f00;
         }
     </style>
 </head>
 <body>
 
-    <h1>QuityyySmoke <span class="logo-emoji">🚭</span></h1>
+    <h1>QuityyySmoke 🚭</h1>
 
-    <div>Hoje</div>
     <div id="contador-display">0</div>
 
-    <button id="botao-registrar">🚭</button>
+    <button id="botao-registrar" onclick="registrarCigarro()">🚭</button>
 
-    <div id="historico-container">
-        <h2>Histórico</h2>
-        <div id="resumo-historico">Aqui vão aparecer os resumos...</div>
+    <div class="aba-historico">
+        <h3>Histórico Recente</h3>
+        <div id="resumo-diario" class="resumo-card">Carregando resumo...</div>
+        <div id="lista-logs"></div>
     </div>
 
-
     <script>
-        /* --- A FIAÇÃO ELÉTRICA (JAVASCRIPT) --- */
-        
-        // 1. Pegando os elementos da tela para o cérebro poder controlar
-        const mostrador = document.getElementById('contador-display');
-        const botao = document.getElementById('botao-registrar');
+        // Carrega os dados salvos ou cria uma lista vazia
+        let registros = JSON.parse(localStorage.getItem('logsCigarro')) || [];
 
-        let contagemHoje = 0;
-
-        // 2. A função que acontece quando clica no botão
-        botao.addEventListener('click', function() {
-            contagemHoje = contagemHoje + 1; // Aumenta a contagem
-            mostrador.textContent = contagemHoje; // Atualiza o número na tela
+        function atualizarTela() {
+            const hoje = new Date().toLocaleDateString();
+            const cigarrosHoje = registros.filter(log => new Date(log).toLocaleDateString() === hoje).length;
             
-            // Por enquanto, só conta. 
-            // Nos próximos passos, vamos adicionar aqui a mágica de SALVAR e registrar a HORA.
-        });
+            document.getElementById('contador-display').innerText = cigarrosHoje;
+            
+            // Atualiza Resumo
+            document.getElementById('resumo-diario').innerHTML = `
+                <strong>Hoje:</strong> ${cigarrosHoje} <br>
+                <strong>Total Geral:</strong> ${registros.length}
+            `;
 
+            // Lista as últimas 5 ocorrências
+            const lista = document.getElementById('lista-logs');
+            lista.innerHTML = registros.slice(-5).reverse().map(log => {
+                const d = new Date(log);
+                return `<div class="item-log"><span>${d.toLocaleDateString()}</span> <span>${d.toLocaleTimeString()}</span></div>`;
+            }).join('');
+        }
+
+        function registrarCigarro() {
+            const agora = new Date().toISOString();
+            registros.push(agora);
+            localStorage.setItem('logsCigarro', JSON.stringify(registros));
+            atualizarTela();
+        }
+
+        // Inicia a tela
+        atualizarTela();
     </script>
-
 </body>
 </html>
-
