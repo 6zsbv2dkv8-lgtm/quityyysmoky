@@ -2,108 +2,170 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>QuityyySmoke</title>
     <style>
         body {
             background-color: #000;
             color: #fff;
-            font-family: -apple-system, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 20px;
+            min-height: 100vh;
         }
 
-        h1 { margin-top: 30px; font-size: 1.5em; color: #fff; }
+        /* Título e Header */
+        h1 { 
+            margin-top: 40px; 
+            font-size: 1.8em; 
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
 
+        .subtitulo {
+            color: #888;
+            font-size: 1em;
+            margin-top: 20px;
+        }
+
+        /* Contador Principal */
         #contador-hoje {
-            font-size: 6em;
-            font-weight: bold;
+            font-size: 7em;
+            font-weight: 800;
             color: #f00;
-            margin: 10px 0;
+            line-height: 1;
+            margin: 10px 0 30px 0;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
         }
 
+        /* Botão Principal */
         #botao-registrar {
             background-color: #f00;
             border: none;
             border-radius: 50%;
-            width: 160px;
-            height: 160px;
-            font-size: 4em;
+            width: 180px;
+            height: 180px;
+            font-size: 5em;
             cursor: pointer;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.1s, box-shadow 0.1s;
             -webkit-tap-highlight-color: transparent;
+            outline: none;
         }
 
-        #botao-registrar:active { transform: scale(0.9); }
+        #botao-registrar:active { 
+            transform: scale(0.92); 
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
+        }
 
-        .controles { margin: 20px 0; }
+        /* Ícone dentro do botão */
+        .icon-no-smoke {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        /* Controles Secundários */
+        .controles { margin: 30px 0; }
+        
         .btn-undo {
-            background: none;
-            border: 1px solid #444;
+            background: rgba(255,255,255,0.1);
+            border: none;
             color: #888;
-            padding: 8px 15px;
+            padding: 10px 20px;
             border-radius: 20px;
-            font-size: 0.8em;
+            font-size: 0.9em;
             cursor: pointer;
+            transition: background 0.2s;
         }
+        .btn-undo:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
+        /* Painel de Resumo */
         .painel {
             width: 100%;
-            max-width: 320px;
-            margin-top: 30px;
+            max-width: 350px;
+            margin-top: 20px;
         }
 
-        h3 { border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 1em; color: #666; }
-
-        .log-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: #111;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            font-size: 0.9em;
-        }
-
-        .resumo-dia {
-            border-left: 3px solid #f00;
-            padding-left: 10px;
+        h3 { 
+            font-size: 1.1em; 
+            color: #fff; 
             margin-bottom: 15px;
+            font-weight: 600;
         }
 
-        .hora-lista { color: #f00; font-weight: bold; }
+        /* Estilo do Card igual ao Print */
+        .card-resumo {
+            background-color: #1c1c1e; /* Cinza escuro estilo iOS */
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* A faixa vermelha na esquerda */
+        .card-resumo::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 5px;
+            background-color: #f00;
+            border-radius: 4px 0 0 4px;
+        }
+
+        .card-data {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .card-total {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .lista-recente {
+            font-size: 0.8em;
+            color: #444;
+            margin-top: 5px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
 
     <h1>QuityyySmoke 🚭</h1>
     
-    <div style="color: #666;">Hoje</div>
+    <div class="subtitulo">Hoje</div>
     <div id="contador-hoje">0</div>
 
-    <button id="botao-registrar" onclick="adicionar()">🚭</button>
+    <button id="botao-registrar" onclick="adicionar()">
+        🚭
+    </button>
 
     <div class="controles">
         <button class="btn-undo" onclick="desfazer()">Desfazer último</button>
     </div>
 
     <div class="painel">
-        <h3>Últimos Registros</h3>
-        <div id="lista-horas"></div>
-    </div>
-
-    <div class="painel">
-        <h3>Resumo Diário</h3>
+        <h3>Resumo</h3>
         <div id="historico-dias"></div>
     </div>
 
     <script>
+        // Carrega dados ou inicia array vazio
         let dados = JSON.parse(localStorage.getItem('qs_logs')) || [];
 
         function salvar() {
@@ -112,47 +174,81 @@
         }
 
         function adicionar() {
+            // Vibração Tátil (Funciona em Android e versões modernas do iOS com interação)
+            if (navigator.vibrate) navigator.vibrate(50);
+            
             dados.push(new Date().toISOString());
             salvar();
         }
 
         function desfazer() {
+            if(dados.length === 0) return;
+            
             if(confirm("Remover o último registro?")) {
                 dados.pop();
                 salvar();
             }
         }
 
-        function atualizar() {
-            const hoje = new Date().toLocaleDateString();
-            
-            // Filtra registros de hoje
-            const registrosHoje = dados.filter(d => new Date(d).toLocaleDateString() === hoje);
-            document.getElementById('contador-hoje').innerText = registrosHoje.length;
-
-            // Lista as horas dos últimos 5 de hoje
-            const listaHoras = document.getElementById('lista-horas');
-            listaHoras.innerHTML = registrosHoje.slice(-5).reverse().map(d => {
-                const hora = new Date(d).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                return `<div class="log-item"><span>Cigarro registrado</span> <span class="hora-lista">${hora}</span></div>`;
-            }).join('');
-
-            // Agrupa por dia para o resumo
-            const resumo = {};
-            dados.forEach(d => {
-                const dia = new Date(d).toLocaleDateString();
-                resumo[dia] = (resumo[dia] || 0) + 1;
-            });
-
-            const histDias = document.getElementById('historico-dias');
-            histDias.innerHTML = Object.keys(resumo).reverse().map(dia => `
-                <div class="resumo-dia">
-                    <div style="font-size: 0.8em; color: #666;">${dia}</div>
-                    <div style="font-weight: bold;">${resumo[dia]} cigarros</div>
-                </div>
-            `).join('');
+        function formatarData(isoString) {
+            const d = new Date(isoString);
+            // Formata DD/MM/YYYY
+            return d.toLocaleDateString('pt-BR');
         }
 
+        function atualizar() {
+            const hojeDataStr = new Date().toLocaleDateString('pt-BR');
+            
+            // 1. Contador Principal (Hoje)
+            // Filtra registros onde a data local bate com hoje
+            const contagemHoje = dados.filter(d => new Date(d).toLocaleDateString('pt-BR') === hojeDataStr).length;
+            
+            // Animação simples do número
+            const elementoContador = document.getElementById('contador-hoje');
+            elementoContador.innerText = contagemHoje;
+            
+            // 2. Agrupamento para o Histórico (Resumo)
+            const resumo = {};
+            
+            // Ordena do mais recente para o mais antigo
+            const dadosOrdenados = [...dados].sort((a, b) => new Date(b) - new Date(a));
+
+            dadosOrdenados.forEach(d => {
+                const dia = new Date(d).toLocaleDateString('pt-BR');
+                if (!resumo[dia]) resumo[dia] = 0;
+                resumo[dia]++;
+            });
+
+            // Gera o HTML dos Cards
+            const containerHist = document.getElementById('historico-dias');
+            const diasUnicos = Object.keys(resumo); // Já virá na ordem decrescente pois processamos dadosOrdenados? 
+            // Não necessariamente chaves de obj garantem ordem. Vamos forçar a ordem das chaves.
+            
+            // Função auxiliar para converter "DD/MM/YYYY" de volta para Date para ordenar chaves
+            const parseDataBR = (str) => {
+                const [d, m, y] = str.split('/');
+                return new Date(`${y}-${m}-${d}`);
+            };
+
+            const chavesOrdenadas = diasUnicos.sort((a, b) => parseDataBR(b) - parseDataBR(a));
+
+            containerHist.innerHTML = chavesOrdenadas.map(dia => {
+                // Destaca visualmente se for o dia de hoje
+                const isHoje = dia === hojeDataStr;
+                const textoDia = isHoje ? `Hoje (${dia})` : dia;
+                const qtd = resumo[dia];
+                const sulfixo = qtd === 1 ? 'cigarro' : 'cigarros';
+
+                return `
+                <div class="card-resumo">
+                    <div class="card-data">${textoDia}</div>
+                    <div class="card-total">${qtd} ${sulfixo}</div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        // Inicializa a tela
         atualizar();
     </script>
 </body>
