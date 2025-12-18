@@ -5,31 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QuityyySmoke</title>
     <style>
-        /* ESTILO MINIMALISTA */
         body {
             background-color: #000;
             color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             margin: 0;
             padding: 20px;
-            text-align: center;
         }
 
-        h1 { margin-top: 40px; font-size: 1.8em; }
+        h1 { margin-top: 30px; font-size: 1.5em; color: #fff; }
 
-        #contador-display {
+        #contador-hoje {
             font-size: 6em;
             font-weight: bold;
-            color: #f00; /* Vermelho */
+            color: #f00;
             margin: 10px 0;
         }
 
         #botao-registrar {
             background-color: #f00;
-            color: #fff;
             border: none;
             border-radius: 50%;
             width: 160px;
@@ -37,102 +34,126 @@
             font-size: 4em;
             cursor: pointer;
             box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
-            margin-bottom: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            -webkit-tap-highlight-color: transparent; /* Remove brilho de clique no celular */
+            -webkit-tap-highlight-color: transparent;
         }
 
-        #botao-registrar:active { transform: scale(0.95); }
+        #botao-registrar:active { transform: scale(0.9); }
 
-        /* ABA DE HISTÓRICO */
-        .historico-secao {
+        .controles { margin: 20px 0; }
+        .btn-undo {
+            background: none;
+            border: 1px solid #444;
+            color: #888;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            cursor: pointer;
+        }
+
+        .painel {
             width: 100%;
-            max-width: 300px;
-            text-align: left;
-            border-top: 1px solid #333;
-            padding-top: 20px;
+            max-width: 320px;
+            margin-top: 30px;
         }
 
-        .resumo-card {
+        h3 { border-bottom: 1px solid #222; padding-bottom: 10px; font-size: 1em; color: #666; }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
             background: #111;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #f00;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .resumo-dia {
+            border-left: 3px solid #f00;
+            padding-left: 10px;
             margin-bottom: 15px;
         }
 
-        .data-label { font-size: 0.8em; color: #888; text-transform: uppercase; }
-        .valor-label { font-size: 1.2em; font-weight: bold; }
+        .hora-lista { color: #f00; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <h1>QuityyySmoke 🚭</h1>
     
-    <p>Hoje</p>
-    <div id="contador-display">0</div>
+    <div style="color: #666;">Hoje</div>
+    <div id="contador-hoje">0</div>
 
-    <button id="botao-registrar" onclick="registrarClique()">🚭</button>
+    <button id="botao-registrar" onclick="adicionar()">🚭</button>
 
-    <div class="historico-secao">
-        <h3>Resumo</h3>
-        <div id="lista-historico">
-            </div>
+    <div class="controles">
+        <button class="btn-undo" onclick="desfazer()">Desfazer último</button>
+    </div>
+
+    <div class="painel">
+        <h3>Últimos Registros</h3>
+        <div id="lista-horas"></div>
+    </div>
+
+    <div class="painel">
+        <h3>Resumo Diário</h3>
+        <div id="historico-dias"></div>
     </div>
 
     <script>
-        // 1. CARREGAR DADOS DA MEMÓRIA
-        let registros = JSON.parse(localStorage.getItem('quityyy_logs')) || [];
+        let dados = JSON.parse(localStorage.getItem('qs_logs')) || [];
 
-        function atualizarInterface() {
-            const agora = new Date();
-            const hojeStr = agora.toLocaleDateString();
-
-            // Filtrar quantos foram hoje
-            const totalHoje = registros.filter(dataIso => {
-                return new Date(dataIso).toLocaleDateString() === hojeStr;
-            }).length;
-
-            document.getElementById('contador-display').innerText = totalHoje;
-
-            // Criar Resumo por dia
-            gerarHistorico();
+        function salvar() {
+            localStorage.setItem('qs_logs', JSON.stringify(dados));
+            atualizar();
         }
 
-        function registrarClique() {
-            const dataHoraAtual = new Date().toISOString();
-            registros.push(dataHoraAtual);
-            
-            // 2. SALVAR NA MEMÓRIA DO NAVEGADOR
-            localStorage.setItem('quityyy_logs', JSON.stringify(registros));
-            
-            atualizarInterface();
+        function adicionar() {
+            dados.push(new Date().toISOString());
+            salvar();
         }
 
-        function gerarHistorico() {
-            const container = document.getElementById('lista-historico');
-            const agrupado = {};
+        function desfazer() {
+            if(confirm("Remover o último registro?")) {
+                dados.pop();
+                salvar();
+            }
+        }
 
-            // Agrupar registros por data
-            registros.forEach(iso => {
-                const d = new Date(iso).toLocaleDateString();
-                agrupado[d] = (agrupado[d] || 0) + 1;
+        function atualizar() {
+            const hoje = new Date().toLocaleDateString();
+            
+            // Filtra registros de hoje
+            const registrosHoje = dados.filter(d => new Date(d).toLocaleDateString() === hoje);
+            document.getElementById('contador-hoje').innerText = registrosHoje.length;
+
+            // Lista as horas dos últimos 5 de hoje
+            const listaHoras = document.getElementById('lista-horas');
+            listaHoras.innerHTML = registrosHoje.slice(-5).reverse().map(d => {
+                const hora = new Date(d).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                return `<div class="log-item"><span>Cigarro registrado</span> <span class="hora-lista">${hora}</span></div>`;
+            }).join('');
+
+            // Agrupa por dia para o resumo
+            const resumo = {};
+            dados.forEach(d => {
+                const dia = new Date(d).toLocaleDateString();
+                resumo[dia] = (resumo[dia] || 0) + 1;
             });
 
-            // Criar o HTML para os últimos dias
-            const datasOrdenadas = Object.keys(agrupado).sort().reverse();
-            container.innerHTML = datasOrdenadas.slice(0, 5).map(data => `
-                <div class="resumo-card">
-                    <div class="data-label">${data}</div>
-                    <div class="valor-label">${agrupado[data]} cigarros</div>
+            const histDias = document.getElementById('historico-dias');
+            histDias.innerHTML = Object.keys(resumo).reverse().map(dia => `
+                <div class="resumo-dia">
+                    <div style="font-size: 0.8em; color: #666;">${dia}</div>
+                    <div style="font-weight: bold;">${resumo[dia]} cigarros</div>
                 </div>
             `).join('');
         }
 
-        // Iniciar o app carregando o que já existe
-        atualizarInterface();
+        atualizar();
     </script>
 </body>
 </html>
