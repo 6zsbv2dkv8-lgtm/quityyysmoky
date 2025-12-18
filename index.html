@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuityyySmoke</title>
+    <style>
+        /* --- A PINTURA (CSS) --- */
+        body {
+            background-color: #000000; /* Fundo Preto */
+            color: #FFFFFF; /* Texto Branco */
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .logo-emoji {
+            font-size: 1.5em;
+        }
+
+        #contador-display {
+            font-size: 5em;
+            font-weight: bold;
+            color: #FF0000; /* Vermelho para destaque */
+            margin: 20px 0;
+        }
+
+        #botao-registrar {
+            background-color: #FF0000; /* Botão Vermelho */
+            color: #FFFFFF;
+            border: none;
+            border-radius: 50%; /* Faz o botão ficar redondo */
+            width: 150px;
+            height: 150px;
+            font-size: 4em;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); /* Um brilho vermelho suave */
+            transition: transform 0.1s;
+        }
+
+        #botao-registrar:active {
+            transform: scale(0.95); /* Efeito de clique */
+        }
+
+        /* Área do Histórico (Invisível por enquanto) */
+        #historico-container {
+            margin-top: 30px;
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+            display: none; /* Escondido por enquanto */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>QuityyySmoke <span class="logo-emoji">🚭</span></h1>
+
+    <div>Hoje</div>
+    <div id="contador-display">0</div>
+
+    <button id="botao-registrar">🚭</button>
+
+    <div id="historico-container">
+        <h2>Histórico</h2>
+        <div id="resumo-historico">Aqui vão aparecer os resumos...</div>
+    </div>
+
+
+    <script>
+        /* --- A FIAÇÃO ELÉTRICA (JAVASCRIPT) --- */
+        
+        // 1. Pegando os elementos da tela para o cérebro poder controlar
+        const mostrador = document.getElementById('contador-display');
+        const botao = document.getElementById('botao-registrar');
+
+        let contagemHoje = 0;
+
+        // 2. A função que acontece quando clica no botão
+        botao.addEventListener('click', function() {
+            contagemHoje = contagemHoje + 1; // Aumenta a contagem
+            mostrador.textContent = contagemHoje; // Atualiza o número na tela
+            
+            // Por enquanto, só conta. 
+            // Nos próximos passos, vamos adicionar aqui a mágica de SALVAR e registrar a HORA.
+        });
+
+    </script>
+
+</body>
+</html>
